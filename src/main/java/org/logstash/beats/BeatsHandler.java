@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import javax.net.ssl.SSLHandshakeException;
 
 public class BeatsHandler extends SimpleChannelInboundHandler<Batch> {
@@ -132,24 +132,24 @@ public class BeatsHandler extends SimpleChannelInboundHandler<Batch> {
      * we will use similar logic than Netty's LoggingHandler
      */
     private String format(String message) {
-        InetSocketAddress local = (InetSocketAddress) context.channel().localAddress();
-        InetSocketAddress remote = (InetSocketAddress) context.channel().remoteAddress();
+        SocketAddress local = context.channel().localAddress();
+        SocketAddress remote = context.channel().remoteAddress();
 
-        String localhost;
-        if(local != null) {
-            localhost = local.getAddress().getHostAddress() + ":" + local.getPort();
-        } else{
-            localhost = "undefined";
-        }
+//        String localhost;
+//        if(local != null) {
+//            localhost = local.getAddress().getHostAddress() + ":" + local.getPort();
+//        } else{
+//            localhost = "undefined";
+//        }
+//
+//        String remotehost;
+//        if(remote != null) {
+//            remotehost = remote.getAddress().getHostAddress() + ":" + remote.getPort();
+//        } else{
+//            remotehost = "undefined";
+//        }
 
-        String remotehost;
-        if(remote != null) {
-            remotehost = remote.getAddress().getHostAddress() + ":" + remote.getPort();
-        } else{
-            remotehost = "undefined";
-        }
-
-        return "[local: " + localhost + ", remote: " + remotehost + "] " + message;
+        return "[local: " + local + ", remote: " + remote + "] " + message;
     }
 
     private static final int MAX_CAUSE_NESTING = 10;

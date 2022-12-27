@@ -1,5 +1,6 @@
 package org.logstash.netty;
 
+import io.netty.channel.Channel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslHandler;
@@ -14,7 +15,7 @@ public class SslHandlerProvider {
         this.sslHandshakeTimeoutMillis = sslHandshakeTimeoutMillis;
     }
 
-    public SslHandler sslHandlerForChannel(final SocketChannel socket) {
+    public SslHandler sslHandlerForChannel(final Channel socket) {
         SslHandler handler =  sslContext.newHandler(socket.alloc());
         handler.setHandshakeTimeoutMillis(sslHandshakeTimeoutMillis);
         return handler;

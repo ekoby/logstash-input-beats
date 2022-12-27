@@ -18,7 +18,7 @@ public class Server {
     private final int port;
     private final String host;
     private final int beatsHeandlerThreadCount;
-    private NioEventLoopGroup workGroup;
+    private EventLoopGroup workGroup;
     private IMessageListener messageListener = new MessageListener();
     private SslHandlerProvider sslHandlerProvider;
     private BeatsInitializer beatsInitializer;
@@ -34,6 +34,13 @@ public class Server {
 
     public void setSslHandlerProvider(SslHandlerProvider sslHandlerProvider){
         this.sslHandlerProvider = sslHandlerProvider;
+    }
+
+    protected BeatsInitializer getBeatsInitializer() {
+        if (beatsInitializer == null) {
+            beatsInitializer = new BeatsInitializer(messageListener, clientInactivityTimeoutSeconds, beatsHeandlerThreadCount);
+        }
+        return beatsInitializer;
     }
 
     public Server listen() throws InterruptedException {
@@ -72,7 +79,7 @@ public class Server {
         logger.debug("Server stopped");
     }
 
-    private void shutdown(){
+    protected void shutdown(){
         try {
             if (workGroup != null) {
                 workGroup.shutdownGracefully().sync();
@@ -101,7 +108,7 @@ public class Server {
         return this.sslHandlerProvider != null;
     }
 
-    private class BeatsInitializer extends ChannelInitializer<SocketChannel> {
+    private class BeatsInitializer extends ChannelInitializer<Channel> {
         private final String SSL_HANDLER = "ssl-handler";
         private final String IDLESTATE_HANDLER = "idlestate-handler";
         private final String CONNECTION_HANDLER = "connection-handler";
@@ -124,7 +131,7 @@ public class Server {
             beatsHandlerExecutorGroup = new DefaultEventExecutorGroup(beatsHandlerThread);
         }
 
-        public void initChannel(SocketChannel socket){
+        public void initChannel(Channel socket){
             ChannelPipeline pipeline = socket.pipeline();
 
             if (isSslEnabled()) {
